@@ -1,5 +1,8 @@
 from pyspark.sql import SparkSession, DataFrame
 import glob
+from typing import Tuple
+import pyspark.sql.functions as F
+from itertools import chain
 
 def create_spark_session() -> SparkSession:
     """ Creates and returns a SparkSession object"""
@@ -48,6 +51,48 @@ def extract_i94_data(spark: SparkSession) -> DataFrame:
     # Return DataFrame
     return df
 
+def extract_mapping() -> dict:
+    """
+    Extracts mapping for Country of Citizenship/Residence
+    """
+    # Open SAS meta file
+    file = open(r'./data/I94_SAS_Labels_Descriptions.SAS', 'r')
+    
+    # Read in
+    lines = file.readlines()
+    
+    # Close file
+    file.close()
+
+    # Subset lines of interest
+    countries = lines[9:298]
+
+    # Define empty dict
+    mapping = {}
+
+    # Add parsed country info to dictionary
+    for country in countries:
+        key, value = parse_row(country)
+        mapping[key] = value
+
+    return mapping
+
+def parse_row(row:str) -> Tuple:
+    """Assumes delimited by = sign"""
+    
+    # Parse into a list, removing single quotes
+    row_list = row.strip() \
+                  .replace('\'','') \
+                  .replace(';','') \
+                  .split('=')
+    
+    # Get key and value, removing any white space
+    key = float(row_list[0].strip())
+    value = row_list[1].strip()
+
+    # Return key/value tuple
+    return (key, value)
+
 def main():
 
     # Get SparkSession object
@@ -55,6 +100,18 @@ def main():
 
     # Extract i94 data from SAS files
     df = extract_i94_data(spark)
+
+    # Create Country of Citizenship/Residence dictionary
+    mapping = extract_mapping()
+
+    # Build mapping_expr to decode i94cit and i94res
+    mapping_expr = F.create_map([F.lit(x) for x in chain(*mapping.items())])
+
+    # Decode i94cit and i94res using mapping_expr
+    df = df.withColumn("i94cit_desc", mapping_expr.getItem(F.col('i94cit')))
+    df = df.withColumn("i94res_desc", mapping_expr.getItem(F.col('i94res')))
+
+    print(df.take(5))
 
 if __name__ == '__main__':
     main() 
