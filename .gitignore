@@ -1,0 +1,14 @@
+# Ignore SAS Files
+*.sas7bdat
+
+# Ignore SAS Description File
+*.SAS
+
+# Ignore data directory
+*.data/
+
+# Ignore Mac OS system file
+.DS_Store
+
+# Ignore
+.vscode/
