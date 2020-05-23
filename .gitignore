@@ -10,5 +10,5 @@
 # Ignore Mac OS system file
 .DS_Store
 
-# Ignore
+# Ignore Visual Studio code file
 .vscode/
