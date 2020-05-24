@@ -12,3 +12,16 @@
 
 # Ignore Visual Studio code file
 .vscode/
+
+# Ignore csv files
+*.csv
+
+# Ignore pdf files
+*.pdf
+
+# Ignore Excel files
+*.xlsx
+*.xls
+
+# Ignore resources directory
+resources/

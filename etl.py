@@ -3,6 +3,7 @@ import glob
 from typing import Tuple
 import pyspark.sql.functions as F
 from itertools import chain
+import pandas as pd
 
 def create_spark_session() -> SparkSession:
     """ Creates and returns a SparkSession object"""
@@ -78,9 +79,9 @@ def extract_mapping() -> dict:
     return mapping
 
 def parse_row(row:str) -> Tuple:
-    """Assumes delimited by = sign"""
+    """Parses row into a key, value pair"""
     
-    # Parse into a list, removing single quotes
+    # Parse into a list, removing ' and ;
     row_list = row.strip() \
                   .replace('\'','') \
                   .replace(';','') \
@@ -111,7 +112,13 @@ def main():
     df = df.withColumn("i94cit_desc", mapping_expr.getItem(F.col('i94cit')))
     df = df.withColumn("i94res_desc", mapping_expr.getItem(F.col('i94res')))
 
-    print(df.take(5))
+    # I-94 Arrivals by Country of Residence (COR) and Month
+    # Exludes Mexico to focus on Overseas countries
+    df.filter(~ df.i94res_desc.contains('MEXICO')) \
+      .groupBy('i94res_desc', 'i94mon') \
+      .count() \
+      .toPandas() \
+      .to_csv('out.csv', index=False)
 
 if __name__ == '__main__':
     main() 
