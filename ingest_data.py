@@ -20,7 +20,7 @@ def ingest_i94_data():
     """
 
     # Get Spark Session object
-    spark = spark.create_spark_session()
+    spark = create_spark_session()
 
     # Read the January file
     df = spark.read.format('com.github.saurfang.sas.spark') \
