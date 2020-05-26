@@ -1,27 +1,14 @@
-# Ignore SAS Files
-*.sas7bdat
-
-# Ignore SAS Description File
-*.SAS
-
-# Ignore data directory
-*.data/
-
 # Ignore Mac OS system file
 .DS_Store
 
 # Ignore Visual Studio code file
 .vscode/
 
-# Ignore csv files
-*.csv
-
-# Ignore pdf files
-*.pdf
-
-# Ignore Excel files
-*.xlsx
-*.xls
+# Ignore (raw) data directory
+data/
 
 # Ignore resources directory
 resources/
+
+# Ignore staging directory
+staging/

@@ -133,7 +133,7 @@ To activate this from a command line type `conda activate spark`.
 
 #### PySpark
 
-I downloaded `spark-2.4.5-bin-hadoop2.7` but not sure if I needed this ultimately. I just pip installed the pyspark library as so:
+I downloaded `spark-2.4.5-bin-hadoop2.7` but not sure if I needed this ultimately. I just pip installed the PySpark library as so:
 
 ```
 python -m pip install pyspark
@@ -154,3 +154,5 @@ python -m pip install pandas
 [Gitignore Explained](https://www.freecodecamp.org/news/gitignore-what-is-it-and-how-to-add-to-repo/)
 
 [Cleaning Data with PySpark](https://www.datacamp.com/courses/cleaning-data-with-pyspark)
+
+[Source of countries_of_the_world.csv](https://www.kaggle.com/fernandol/countries-of-the-world)
