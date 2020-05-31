@@ -12,3 +12,6 @@ resources/
 
 # Ignore staging directory
 staging/
+
+# Igonre __pycache__directory
+__pycache__/

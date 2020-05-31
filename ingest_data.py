@@ -19,7 +19,7 @@ def ingest_i94_data():
     Ingests i94 data for the year 2016 from 12, monthly SAS files
     """
 
-    # Get Spark Session object
+    # Get SparkSession object
     spark = create_spark_session()
 
     # Read the January file
@@ -66,7 +66,7 @@ def parse_row(row:str) -> Tuple:
     # Return key/value tuple
     return (key, value)
 
-def ingest_coc_cor_data():
+def ingest_i94_cit_res_data():
     """
     Ingests decode mapping for Country of Citizenship/Residence
     """
@@ -79,9 +79,12 @@ def ingest_coc_cor_data():
     countries = lines[9:298]
 
     # Write to CSV file
-    with open('./staging/data_coc_cor.csv', mode='w') as outfile:
+    with open('./staging/i94_cit_res_data.csv', mode='w') as outfile:
         # Assign writer object
         outfile_writer = csv.writer(outfile)
+
+        # Write out header row
+        outfile_writer.writerow(('country_id', 'country'))
 
         # Loop over countries, writing out tuple
         for country in countries:
@@ -93,7 +96,7 @@ def main():
     # ingest_i94_data()
 
     # Ingest Country of Citizenship/Residence Mapping
-    ingest_coc_cor_data()
+    ingest_i94_cit_res_data()
 
 if __name__ == '__main__':
     main() 
