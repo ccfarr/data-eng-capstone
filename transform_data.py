@@ -29,8 +29,8 @@ def clean_column_name(column_name: str) -> str:
     # Return cleaned name
     return clean_name
 
-def transform_countries_of_the_world(spark: SparkSession) -> DataFrame:
-    """ Changes data types of selected columns and makes name column unique """
+def process_countries_of_the_world(spark: SparkSession) -> DataFrame:
+    """ Processes staging/countires_of_the_world.csv yielding production/dim_countries_of_the_world """
 
     # Filename of input file
     filename = 's3://data-eng-capstone-cf/staging/countries_of_the_world.csv'
@@ -42,28 +42,33 @@ def transform_countries_of_the_world(spark: SparkSession) -> DataFrame:
     for c in df.columns:
         df = df.withColumnRenamed(c, clean_column_name(c))
 
-    # Change data types
-    # Country and Region columns are truly strings
-    # Population, Area (sq. mi.), GDP ($ per capita) and Climate are whole numbers
-    int_cols = ['population', 'area_sq_mi', 'climate']
-    for c in int_cols:
-        df = df.withColumn(c, F.col(c).cast(IntegerType()))
+    # Get desired columns
+    df = df.select('country', 'region', 'population', 'gdp_dol_per_capita')
 
-    # All other columns are decimals
-    # Make decimal separator a period versus comma (US format)
-    for c in df.columns:
-        if c not in int_cols + ['country', 'region']:
-            df = df.withColumn(c, F.regexp_replace(c,',','.').cast(DoubleType()))
+    # Change data types
+    # country and region are already strings, leave as is
+    # population and gdp_dol_per_capita are ints
+    for c in ['population', 'gdp_dol_per_capita']:
+        df = df.withColumn(c, F.col(c).cast(IntegerType()))
 
     # Remove trailing and leading white space from Country and Region
     for c in ['country', 'region']:
         df = df.withColumn(c, F.trim(F.col(c)))
 
+    # Export dataframe table to parquet formatted file on s3
+    df.write \
+      .mode('overwrite') \
+      .parquet('s3://data-eng-capstone-cf/production/dim_countries_of_the_world')
+
+    # Check schema and count
+    df.printSchema()
+    df.count()
+
     # Return transformed dataframe
     return df
 
-def transform_i94_cit_res_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
-    """ Changes data types of selected columns and makes name column unique """
+def process_i94_cit_res_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
+    """ Processes mapping file between countries_of_the_world.csv and i94_data.parquet """
 
     # Filename of input file
     filename = 's3://data-eng-capstone-cf/staging/i94_cit_res_data.csv'
@@ -115,11 +120,15 @@ def transform_i94_cit_res_data(spark: SparkSession, df_right: DataFrame) -> Data
     df = df.join(df_right, df.country_join == df_right.country, how='left') \
            .select('country_id', df.country, df_right.country.alias('country_fk'))
 
+    # Check schema and count
+    df.printSchema()
+    df.count()
+
     # Return transformed dataframe
     return df
 
-def transform_i94_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
-    """ Transforms the i9_data as outlined below """
+def process_i94_data(spark: SparkSession, df_right: DataFrame):
+    """ Processes staging/i94_data.parquet yielding production/fact_i94 """
 
     # Filename of input file
     filename = 's3://data-eng-capstone-cf/staging/i94_data'
@@ -127,9 +136,11 @@ def transform_i94_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
     # Read into a spark dataframe
     df = spark.read.parquet(filename)
 
-    # Keep columns of interest (i94mon, i94res, i94mode, i94bir, i94visa, visatype)
+    # Keep columns of interest and aggregate
     cols = ['i94mon', 'i94res', 'i94mode', 'i94bir', 'i94visa', 'visatype']
-    df = df.select(cols)
+    df = df.groupBy(cols) \
+           .count() \
+           .withColumnRenamed('count', 'visitor_count')
 
     # Cast double typed columns as ints (i94mon, i94res, i94mode, i94bir, i94visa)
     cols.remove('visatype')
@@ -142,6 +153,9 @@ def transform_i94_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
     # Define country_fk via left outer join
     df = df.join(df_right, df.i94res == df_right.country_id, how='left')
     df = df.drop('country_id')
+
+    # Replace numeric i94res column with its decoded counterpart
+    df = df.withColumn('i94res', F.col('country'))
 
     # Decode selected columns using F.when (i94mode, i94visa)
     # i94mode
@@ -163,32 +177,39 @@ def transform_i94_data(spark: SparkSession, df_right: DataFrame) -> DataFrame:
     df = df.drop('i94visa')
     df = df.withColumnRenamed('i94visa_desc', 'i94visa')
 
-    # Return transformed dataframe
-    return df
+    # Check schema and count
+    df.printSchema()
+    df.count()
+
+    # Export dataframe table to parquet formatted file on s3
+    df.write \
+      .mode('overwrite') \
+      .partitionBy('i94mon', 'i94res') \
+      .parquet('s3://data-eng-capstone-cf/production/fact_i94')
 
 def main():
 
     # Get Spark Session object
     spark = create_spark_session()
 
-    # Transform staging/countires_of_the_world.csv 
-    df_cow = transform_countries_of_the_world(spark)
+    # Process staging/countires_of_the_world.csv -> production/dim_countires_of_the_world.parquet
+    df_cow = process_countries_of_the_world(spark)
 
-    # Transform staging/i94_cit_res_data.csv
-    df_cr = transform_i94_cit_res_data(spark, df_cow)
+    # Process staging/i94_cit_res_data.csv
+    df_cr = process_i94_cit_res_data(spark, df_cow)
 
-    # Transform staging/i94_data.parquet
-    df_i94 = transform_i94_data(spark, df_cr)
+    # Process staging/i94_data.parquet -> production/fact_i94.parquet
+    process_i94_data(spark, df_cr)
 
-    df = df_i94.filter(~ df_i94.country.contains('MEXICO')) \
-               .groupBy('country', 'country_fk', 'i94mon') \
-               .count()
+    # df = df_i94.filter(~ df_i94.country.contains('MEXICO')) \
+    #            .groupBy('country', 'country_fk', 'i94mon') \
+    #            .count()
 
-    df = df.repartition(1)
+    # df = df.repartition(1)
 
-    df.write.csv(path='s3://data-eng-capstone-cf/production/analysis.csv',
-                 mode='overwrite',
-                 header=True)
+    # df.write.csv(path='s3://data-eng-capstone-cf/production/analysis.csv',
+    #              mode='overwrite',
+    #              header=True)
 
     # print(f'*** IT WORKED *** There are {df_i94.count()} columns in staging/i94_data.parquet.')
 
