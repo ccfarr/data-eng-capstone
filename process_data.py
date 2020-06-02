@@ -156,6 +156,7 @@ def process_i94_data(spark: SparkSession, df_right: DataFrame):
 
     # Replace numeric i94res column with its decoded counterpart
     df = df.withColumn('i94res', F.col('country'))
+    df = df.drop('country')
 
     # Decode selected columns using F.when (i94mode, i94visa)
     # i94mode
