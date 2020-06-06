@@ -9,8 +9,6 @@ Explain what you plan to do in the project in more detail. What data do you use?
 **INSERT DIAGRAM HERE**
 
 #### Describe and Gather Data 
-Describe the data sets you're using. Where did it come from? What type of information is included?
-
 I used two primary datasets:
 
 **i94 data**
