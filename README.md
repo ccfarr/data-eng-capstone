@@ -131,7 +131,7 @@ All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
 
 ![EMR Cluster Configuration](./images/EMR%20Cluster%20Configuration.png?raw=true)
 
-* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting an EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
+* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting an EMR notebook. Had success after downgrading to release emr-5.29.0. ([link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel))  
 
 * Switched to us-east-1 region after getting `The requested instance type m5.xlarge is not supported in the requested availability zone.`  
 
@@ -139,7 +139,7 @@ All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
 
 ##### Generate Key Pair and associate it with EMR cluster
 
-1. Go to the Amazon EC2 console [link](https://us-west-2.console.aws.amazon.com/ec2/v2/home)
+1. Go to the Amazon EC2 console ([link](https://us-west-2.console.aws.amazon.com/ec2/v2/home))  
 2. In the Navigation pane, click Key Pairs
 3. On the Key Pairs page, click Create Key Pair
 4. In the Create Key Pair dialog box, enter a name for your key pair, such as, mykeypair
