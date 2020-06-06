@@ -202,17 +202,5 @@ def main():
     # Process staging/i94_data.parquet -> production/fact_i94.parquet
     process_i94_data(spark, df_cr)
 
-    # df = df_i94.filter(~ df_i94.country.contains('MEXICO')) \
-    #            .groupBy('country', 'country_fk', 'i94mon') \
-    #            .count()
-
-    # df = df.repartition(1)
-
-    # df.write.csv(path='s3://data-eng-capstone-cf/production/analysis.csv',
-    #              mode='overwrite',
-    #              header=True)
-
-    # print(f'*** IT WORKED *** There are {df_i94.count()} columns in staging/i94_data.parquet.')
-
 if __name__ == '__main__':
     main() 

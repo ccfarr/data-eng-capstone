@@ -51,6 +51,32 @@ df.filter(~ df.i94res_desc.contains('MEXICO')) \
 #### 4.3 Data dictionary 
 Create a data dictionary for your data model. For each field, provide a brief description of what the data is and where it came from. You can include the data dictionary in the notebook or in a separate file.
 
+**production/dim_countries_of_the_world**
+
+All fields sourced from countries_of_the_world.csv ([link](https://www.kaggle.com/fernandol/countries-of-the-world))
+
+| Field      | Description | Example Value | Data Type |
+| ---------- | ----------- | ------------- | --------- |
+| country | The country's name | Aruba | string |
+| region | The country's geographic region | LATIN AMER. & CARIB | string |
+| population | The country's population | 71891 | integer |
+| gdp_dol_per_capita | The country's per capita GDP in US dollars | 28000 | integer |
+
+**production/fact_i94**
+
+All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
+
+| Field      | Description | Example Value | Data Type |
+| ---------- | ----------- | ------------- | --------- |
+| i94bir | The age of the visitors | 56 | integer |
+| visatype | The visa type of the visitors | WT | string |
+| visitor_count | The number of visitors | 1091 | long |
+| country | The country of residence of the visitors | SOUTH KOREA | string |
+| country_fk | The country's corresponding name in the dimension table | Korea, South | string |
+| i94mode | The mode of travel | Air | string |
+| i94visa | The visa's purpose | Pleasure | string |
+| i94mon | The month of arrival (2016) | 4 | integer |
+
 #### Step 5: Complete Project Write Up
 * Clearly state the rationale for the choice of tools and technologies for the project.
 * Propose how often the data should be updated and why.
@@ -59,7 +85,7 @@ Create a data dictionary for your data model. For each field, provide a brief de
  * The data populates a dashboard that must be updated on a daily basis by 7am every day.
  * The database needed to be accessed by 100+ people.
 
-### Setup
+### Setup on Local Computer (ingest_data.py)
 
 I ran development versions of my PySpark code in Local Mode on my Mac which has the following hardware configuration:
 
@@ -146,6 +172,53 @@ python -m pip install pylint
 python -m pip install jupyter
 python -m pip install pandas
 ```
+
+### Notes on working with EMR cluster on AWS
+
+#### EMR Cluster Configuration
+
+![EMR Cluster Configuration](./images/EMR%20Cluster%20Configuration.png?raw=true)
+
+* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting a EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
+
+* Switched to us-east-1 region after getting `The requested instance type m5.xlarge is not supported in the requested availability zone.`  
+
+#### Setting up SSH
+
+##### Generate Key Pair and associate it with EMR cluster
+
+1. Go to the Amazon EC2 console [link](https://us-west-2.console.aws.amazon.com/ec2/v2/home)
+2. In the Navigation pane, click Key Pairs
+3. On the Key Pairs page, click Create Key Pair
+4. In the Create Key Pair dialog box, enter a name for your key pair, such as, mykeypair
+5. Click Create
+6. Save the resulting PEM file in a safe location
+7. Associate this Key Pair when initializing EMR cluster
+
+##### Run the following at command prompt 
+
+Download the Key Pair and run `chmod og-rwx mykeypair.pem` at command prompt
+
+##### Add inbound rule to the security group of the master node
+
+1. Click security groups for master
+2. Click the relevant Group ID
+3. Click Inbound tab at bottom
+4. Add rule with the following properties:
+    Type: SSH
+    Protocol: TCP
+    Port Range: 22
+    Source: 0.0.0.0/0
+
+#### Using SSH to run process_data.py
+
+1. To establish ssh session (from local machine): `ssh -i mykeypair.pem hadoop@ec2-###-##-##-###.compute-1.amazonaws.com`
+
+2. To use python3 interpreter (from remote machine): `sudo sed -i -e '$a\export PYSPARK_PYTHON=/usr/bin/python3' /etc/spark/conf/spark-env.sh`  
+
+3. To copy files (from local machine): `scp -i mykeypair.pem process_data.py hadoop@ec2-###-##-##-###.compute-1.amazonaws.com:/home/hadoop`
+
+4. To run python file (from remote machine): `spark-submit process_data.py`
 
 ### Useful Resources
 
