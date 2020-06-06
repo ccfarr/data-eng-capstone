@@ -77,7 +77,7 @@ Explain the data quality checks you'll perform to ensure the pipeline ran as exp
  * Unit tests for the scripts to ensure they are doing the right thing
  * Source/Count checks to ensure completeness
 
-I compared the number of visitors in 2016 from a report on the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to dataframe I generated using the following command:
+I compared the number of visitors in 2016 from a report on the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to a dataframe I generated using the following command:
 
 ```
 # I-94 Arrivals by Country of Residence (COR) and Month
