@@ -93,7 +93,7 @@ def ingest_i94_cit_res_data():
 def main():
 
     # Ingest i94 data from SAS files
-    # ingest_i94_data()
+    ingest_i94_data()
 
     # Ingest Country of Citizenship/Residence Mapping
     ingest_i94_cit_res_data()
