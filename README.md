@@ -125,6 +125,53 @@ All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
  * The data populates a dashboard that must be updated on a daily basis by 7am every day.
  * The database needed to be accessed by 100+ people.
 
+### Setup and Working with EMR cluster on AWS
+
+#### EMR Cluster Configuration
+
+![EMR Cluster Configuration](./images/EMR%20Cluster%20Configuration.png?raw=true)
+
+* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting an EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
+
+* Switched to us-east-1 region after getting `The requested instance type m5.xlarge is not supported in the requested availability zone.`  
+
+#### Setting up SSH
+
+##### Generate Key Pair and associate it with EMR cluster
+
+1. Go to the Amazon EC2 console [link](https://us-west-2.console.aws.amazon.com/ec2/v2/home)
+2. In the Navigation pane, click Key Pairs
+3. On the Key Pairs page, click Create Key Pair
+4. In the Create Key Pair dialog box, enter a name for your key pair, such as, mykeypair
+5. Click Create
+6. Save the resulting PEM file in a safe location
+7. Associate this Key Pair when initializing EMR cluster
+
+##### Run the following at command prompt 
+
+Download the Key Pair and run `chmod og-rwx mykeypair.pem` at command prompt
+
+##### Add inbound rule to the security group of the master node
+
+1. Click security groups for master
+2. Click the relevant Group ID
+3. Click Inbound tab at bottom
+4. Add rule with the following properties:
+    Type: SSH
+    Protocol: TCP
+    Port Range: 22
+    Source: 0.0.0.0/0
+
+#### Using SSH to run process_data.py
+
+1. To establish ssh session (from local machine): `ssh -i mykeypair.pem hadoop@ec2-###-##-##-###.compute-1.amazonaws.com`
+
+2. To use python3 interpreter (from remote machine): `sudo sed -i -e '$a\export PYSPARK_PYTHON=/usr/bin/python3' /etc/spark/conf/spark-env.sh`  
+
+3. To copy files (from local machine): `scp -i mykeypair.pem process_data.py hadoop@ec2-###-##-##-###.compute-1.amazonaws.com:/home/hadoop`
+
+4. To run python file (from remote machine): `spark-submit process_data.py`
+
 ### Setup on Local Computer (ingest_data.py)
 
 I ran development versions of my PySpark code in Local Mode on my Mac which has the following hardware configuration:
@@ -183,53 +230,6 @@ python -m pip install pylint
 python -m pip install jupyter
 python -m pip install pandas
 ```
-
-### Notes on working with EMR cluster on AWS
-
-#### EMR Cluster Configuration
-
-![EMR Cluster Configuration](./images/EMR%20Cluster%20Configuration.png?raw=true)
-
-* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting an EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
-
-* Switched to us-east-1 region after getting `The requested instance type m5.xlarge is not supported in the requested availability zone.`  
-
-#### Setting up SSH
-
-##### Generate Key Pair and associate it with EMR cluster
-
-1. Go to the Amazon EC2 console [link](https://us-west-2.console.aws.amazon.com/ec2/v2/home)
-2. In the Navigation pane, click Key Pairs
-3. On the Key Pairs page, click Create Key Pair
-4. In the Create Key Pair dialog box, enter a name for your key pair, such as, mykeypair
-5. Click Create
-6. Save the resulting PEM file in a safe location
-7. Associate this Key Pair when initializing EMR cluster
-
-##### Run the following at command prompt 
-
-Download the Key Pair and run `chmod og-rwx mykeypair.pem` at command prompt
-
-##### Add inbound rule to the security group of the master node
-
-1. Click security groups for master
-2. Click the relevant Group ID
-3. Click Inbound tab at bottom
-4. Add rule with the following properties:
-    Type: SSH
-    Protocol: TCP
-    Port Range: 22
-    Source: 0.0.0.0/0
-
-#### Using SSH to run process_data.py
-
-1. To establish ssh session (from local machine): `ssh -i mykeypair.pem hadoop@ec2-###-##-##-###.compute-1.amazonaws.com`
-
-2. To use python3 interpreter (from remote machine): `sudo sed -i -e '$a\export PYSPARK_PYTHON=/usr/bin/python3' /etc/spark/conf/spark-env.sh`  
-
-3. To copy files (from local machine): `scp -i mykeypair.pem process_data.py hadoop@ec2-###-##-##-###.compute-1.amazonaws.com:/home/hadoop`
-
-4. To run python file (from remote machine): `spark-submit process_data.py`
 
 ### Useful Resources
 
