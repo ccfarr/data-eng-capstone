@@ -15,7 +15,7 @@ I used two primary datasets:
 
 **i94 data**
 
-The i94 data contains information about visitors to the US via an i94 that all visitors must complete. I acquired the data as follows:
+The i94 data contains information about visitors to the US via an i94 form that all visitors must complete. I acquired the data as follows:
 
 From a terminal in Udacity's JupyterLab environment, I compressed the I-94 data by typing the following from the default prompt (/home/workspace):
 
@@ -27,7 +27,7 @@ c - create new archive
 v - verbose  
 f - use given archive file  
 
-After downloading `data.tar.gz`, I then uncompressed the files using my Mac's built-in Archive Utility. The result was 12 files:
+After downloading `data.tar.gz` to my local machine, I then uncompressed the files using my Mac's built-in Archive Utility. The result was 12 files:
 
 ```
 i94_jan16_sub.sas7bdat
@@ -48,7 +48,7 @@ I also downloaded a small "mapping" file (i94_SAS_Labels_Descriptions.SAS) used 
 
 **Countries of the World data**
 
-This data contains formation about countries in the world like population, GDP per capita and other country-level attributes.
+This data contains information about countries like population, GDP per capita and other country-level attributes.
 
 I downloaded this CSV file from Kaggle.com ([Source of countries_of_the_world.csv](https://www.kaggle.com/fernandol/countries-of-the-world)).
 
