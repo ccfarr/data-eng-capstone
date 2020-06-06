@@ -77,17 +77,21 @@ Explain the data quality checks you'll perform to ensure the pipeline ran as exp
  * Unit tests for the scripts to ensure they are doing the right thing
  * Source/Count checks to ensure completeness
 
-I compared arrivals data from the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to a report I generated using the following command:
+I compared the number of visitors in 2016 from a report on the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to dataframe I generated using the following command:
 
 ```
 # I-94 Arrivals by Country of Residence (COR) and Month
 # Exludes Mexico to focus on Overseas countries
-df.filter(~ df.i94res_desc.contains('MEXICO')) \
-    .groupBy('i94res_desc', 'i94mon') \
-    .count() \
-    .toPandas() \
-    .to_csv('out.csv', index=False)
+df_analysis = df_fact.filter(~df_fact.i94res.contains('MEXICO')) \
+                     .groupBy('i94res') \
+                     .sum('visitor_count') \
+                     .orderBy(F.desc('sum(visitor_count)'))
 ```
+
+The comparison is shown below, where the result of the dataframe is on the left and the figures from the government report is shown at right. A perfect match for the top 20 countries!
+
+![QC Comparison](./images/QC%20Comparison.png?raw=true)
+
 
 #### 4.3 Data dictionary 
 
@@ -111,11 +115,11 @@ All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
 | i94bir | The age of the visitors | 56 | integer |
 | visatype | The visa type of the visitors | WT | string |
 | visitor_count | The number of visitors | 1091 | long |
-| country | The country of residence of the visitors | SOUTH KOREA | string |
 | country_fk | The country's corresponding name in the dimension table | Korea, South | string |
 | i94mode | The mode of travel | Air | string |
 | i94visa | The visa's purpose | Pleasure | string |
 | i94mon | The month of arrival (2016) | 4 | integer |
+| i94res | The country of residence of the visitors | SOUTH KOREA | string |
 
 #### Step 5: Complete Project Write Up
 * Clearly state the rationale for the choice of tools and technologies for the project.
