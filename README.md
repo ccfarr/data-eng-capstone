@@ -4,10 +4,53 @@ Data Engineering Capstone Project
 ### Step 1: Scope the Project and Gather Data
 
 #### Scope 
-Explain what you plan to do in the project in more detail. What data do you use? What is your end solution look like? What tools did you use? etc>
+Explain what you plan to do in the project in more detail. What data do you use? What is your end solution look like? What tools did you use? etc.
+
+**INSERT DIAGRAM HERE**
 
 #### Describe and Gather Data 
 Describe the data sets you're using. Where did it come from? What type of information is included?
+
+I used two primary datasets:
+
+**i94 data**
+
+The i94 data contains information about visitors to the US via an i94 that all visitors must complete. I acquired the data as follows:
+
+From a terminal in Udacity's JupyterLab environment, I compressed the I-94 data by typing the following from the default prompt (/home/workspace):
+
+```
+tar -zcvf data.tar.gz ../../data
+```
+z - use gzip  
+c - create new archive  
+v - verbose  
+f - use given archive file  
+
+After downloading `data.tar.gz`, I then uncompressed the files using my Mac's built-in Archive Utility. The result was 12 files:
+
+```
+i94_jan16_sub.sas7bdat
+i94_feb16_sub.sas7bdat
+i94_mar16_sub.sas7bdat
+i94_apr16_sub.sas7bdat
+i94_may16_sub.sas7bdat
+i94_jun16_sub.sas7bdat  
+i94_jul16_sub.sas7bdat
+i94_aug16_sub.sas7bdat
+i94_sep16_sub.sas7bdat
+i94_oct16_sub.sas7bdat
+i94_nov16_sub.sas7bdat
+i94_dec16_sub.sas7bdat
+```
+
+I also downloaded a small "mapping" file (i94_SAS_Labels_Descriptions.SAS) used to decode numeric values.
+
+**Countries of the World data**
+
+This data contains formation about countries in the world like population, GDP per capita and other country-level attributes.
+
+I downloaded this CSV file from Kaggle.com ([Source of countries_of_the_world.csv](https://www.kaggle.com/fernandol/countries-of-the-world)).
 
 ### Step 2: Explore and Assess the Data
 
@@ -49,7 +92,6 @@ df.filter(~ df.i94res_desc.contains('MEXICO')) \
 ```
 
 #### 4.3 Data dictionary 
-Create a data dictionary for your data model. For each field, provide a brief description of what the data is and where it came from. You can include the data dictionary in the notebook or in a separate file.
 
 **production/dim_countries_of_the_world**
 
@@ -94,35 +136,6 @@ I ran development versions of my PySpark code in Local Mode on my Mac which has 
 * Processor: 3 GHz Dual-Core Intel Core i7
 * Memory: 8 GB 1600 MHz DDR3
 * HD: 500 GB Flash Storage (432.1 GB Available)
-
-#### Downloading the I-94 data
-
-From a terminal in Udacity's JupyterLab environment, I compressed the I-94 data by typing the following from the default prompt (/home/workspace):
-
-```
-tar -zcvf data.tar.gz ../../data
-```
-z - use gzip  
-c - create new archive  
-v - verbose  
-f - use given archive file  
-
-After downloading `data.tar.gz`, I then uncompressed the files using my Mac's built-in Archive Utility. The result was 12 files:
-
-```
-i94_jan16_sub.sas7bdat
-i94_feb16_sub.sas7bdat
-i94_mar16_sub.sas7bdat
-i94_apr16_sub.sas7bdat
-i94_may16_sub.sas7bdat
-i94_jun16_sub.sas7bdat  
-i94_jul16_sub.sas7bdat
-i94_aug16_sub.sas7bdat
-i94_sep16_sub.sas7bdat
-i94_oct16_sub.sas7bdat
-i94_nov16_sub.sas7bdat
-i94_dec16_sub.sas7bdat
-```
 
 #### Installing Java
 
@@ -179,7 +192,7 @@ python -m pip install pandas
 
 ![EMR Cluster Configuration](./images/EMR%20Cluster%20Configuration.png?raw=true)
 
-* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting a EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
+* When using release emr-5.30.0, I received `Failed to start the kernel` error message when starting an EMR notebook. Had success after downgrading to release emr-5.29.0. [link](https://stackoverflow.com/questions/61951352/notebooks-on-emr-aws-failed-to-start-kernel)  
 
 * Switched to us-east-1 region after getting `The requested instance type m5.xlarge is not supported in the requested availability zone.`  
 
