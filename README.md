@@ -15,7 +15,7 @@ I used two primary datasets:
 
 The i94 data contains information about visitors to the US via an i94 form that all visitors must complete. I acquired the data as follows:
 
-From a terminal in Udacity's JupyterLab environment, I compressed the I-94 data by typing the following from the default prompt (/home/workspace):
+From a terminal in Udacity's JupyterLab environment, I compressed the I-94 data by typing the following from the default prompt (`/home/workspace`):
 
 ```
 tar -zcvf data.tar.gz ../../data
@@ -48,7 +48,7 @@ I also downloaded a small "mapping" file (i94_SAS_Labels_Descriptions.SAS) used 
 
 This data contains information about countries like population, GDP per capita and other country-level attributes.
 
-I downloaded this CSV file from Kaggle.com ([Source of countries_of_the_world.csv](https://www.kaggle.com/fernandol/countries-of-the-world)).
+I downloaded this CSV file from Kaggle.com ([link](https://www.kaggle.com/fernandol/countries-of-the-world)).
 
 ### Step 2: Explore and Assess the Data
 
