@@ -61,29 +61,9 @@ Identify data quality issues, like missing values, duplicate data, etc.
 
 I explored the three datasets in the staging directory on S3 using three EMR notebooks:
 
-**staging/i94_data.parquet**
+**staging/countries_of_the_world.csv**
 
-[notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)
-
-* 40,790,529 records
-* 28 columns
-* Numeric columns all typed as doubles
-* i94res has no missing values
-* i94bir has suspicious values, e.g. age < 0 and age >> 100
-
-Note: The python script [`ingest_data.py`](ingest_data.py) unions the 12 monthly files to produce this dataset. While performing the union, I noticed that the June file had extra columns, which I had to remove. See the python script for more details.
-
-**staging/i94_cit_res_data.csv**
-
-[notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb)
-
-* 289 records
-* 2 columns: country_id and country
-* Both columns come in as strings even though country_id is really numeric
-* Neither column contains any missing values
-* country_id has no duplicates but country does
-
-**[3. notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries_of_the_world.ipynb)**
+See [notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries_of_the_world.ipynb).
 
 * 227 records in total
 * 20 columns, all read in as strings
@@ -93,10 +73,59 @@ Note: The python script [`ingest_data.py`](ingest_data.py) unions the 12 monthly
 * Country, the primary key, does not contain any duplicate values or missing values
 * Descriptive statistics (e.g. China most populous) as expected
 
-#### Cleaning Steps
-Document steps necessary to clean the data
+**staging/i94_cit_res_data.csv**
+
+See [notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb).
+
+* 289 records
+* 2 columns: country_id and country
+* Both columns come in as strings even though country_id is really numeric
+* Neither column contains any missing values
+* country_id has no duplicates but country does
 
 **staging/i94_data.parquet**
+
+See [notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb).
+
+* 40,790,529 records
+* 28 columns
+* Numeric columns all typed as doubles
+* i94res has no missing values
+* i94bir has suspicious values, e.g. age < 0 and age >> 100
+
+Note: The python script [`ingest_data.py`](ingest_data.py) unions the 12 monthly files to produce this dataset. While performing the union, I noticed that the June file had extra columns, which I had to remove. See the python script for more details.
+
+#### Cleaning Steps
+I identified the following cleaning steps, which I implemented in [process_data.py](process_data.py):
+
+**staging/countries_of_the_world.csv**
+
+* Clean column names, get rid of space, comma, parenthesis, etc.
+* Select subset of columns:
+ * country, region, population, and gdp_dol_per_capita
+* Change data types
+ * country and region are already strings, leave as is
+ * population and gdp_dol_per_capita to ints
+* Remove trailing and leading white space from country and region
+
+**staging/i94_cit_res_data.csv**
+
+* Cast country_id as an IntegerType()
+* Make country unique, by appending `(<country_id>)` to string name
+ * Only do when country equals INVALID: STATELESS or INVALID: UNITED STATES
+* Add foreign key column so can join to df_cow, name country_fk
+
+**staging/i94_data.parquet**
+
+* Keep columns of interest and aggregate
+ * i94mon, i94res, i94mode, i94bir, i94visa, visatype
+* Cast double typed columns as ints:
+ * i94mon, i94res, i94mode, i94bir, i94visa
+* Decode selected columns using mapping file (i94res)
+* Include country_fk column from mapping file
+* Define country_fk via left outer join
+* Replace numeric i94res column with its decoded counterpart
+* Decode selected columns using F.when (i94mode, i94visa)
 
 ### Step 3: Define the Data Model
 
