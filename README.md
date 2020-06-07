@@ -61,9 +61,7 @@ Identify data quality issues, like missing values, duplicate data, etc.
 
 I explored the three datasets in my staging on S3 using three EMR notebooks:
 
-**[notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)**
-
-Exploration summary:
+**[1. notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)**
 
 * 40,790,529 records
 * 28 columns
@@ -71,6 +69,23 @@ Exploration summary:
 * i94res has no missing values
 * i94bir has suspicious values, e.g. age < 0 and age >> 100
 
+**[2. notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb)**
+
+* 289 records
+* 2 columns: country_id and country
+* Both columns come in as strings even though country_id is really numeric
+* Neither column contains any missing values
+* country_id has no duplicates but country does
+
+**[3. notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries_of_the_world.ipynb)**
+
+* 227 records in total
+* 20 columns, all read in as strings
+ * Country and Region columns are truly strings
+ * Population, Area (sq. mi.), GDP ($ per capita) and Climate are whole numbers
+ * All other columns are decimals
+* Country, the primary key, does not contain any duplicate values or missing values
+* Descriptive statistics (e.g. China most populous) as expected
 
 #### Cleaning Steps
 Document steps necessary to clean the data
