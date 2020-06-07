@@ -104,23 +104,23 @@ I identified the following cleaning steps, which I implemented in [process_data.
 * Select subset of columns:
   * country, region, population, and gdp_dol_per_capita
 * Change data types
- * country and region are already strings, leave as is
- * population and gdp_dol_per_capita to ints
+  * country and region are already strings, leave as is
+  * population and gdp_dol_per_capita to ints
 * Remove trailing and leading white space from country and region
 
 **staging/i94_cit_res_data.csv**
 
 * Cast country_id as int
 * Make country unique, by appending `(<country_id>)` to string name
- * Only do when country equals INVALID: STATELESS or INVALID: UNITED STATES
+  * Only do when country equals INVALID: STATELESS or INVALID: UNITED STATES
 * Add foreign key column so can join to df_cow, name country_fk
 
 **staging/i94_data.parquet**
 
 * Keep columns of interest and aggregate
- * i94mon, i94res, i94mode, i94bir, i94visa, visatype
+  * i94mon, i94res, i94mode, i94bir, i94visa, visatype
 * Cast double typed columns to ints:
- * i94mon, i94res, i94mode, i94bir, i94visa
+  * i94mon, i94res, i94mode, i94bir, i94visa
 * Decode selected columns using mapping file (i94res)
 * Decode selected columns using F.when (i94mode, i94visa)
 
