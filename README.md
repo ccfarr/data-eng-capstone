@@ -100,7 +100,7 @@ I identified the following cleaning steps, which I implemented in [process_data.
 
 **staging/countries_of_the_world.csv**
 
-* Clean column names, get rid of space, comma, parenthesis, etc.
+* Clean column names: remove space, comma, parenthesis, etc.
 * Select subset of columns:
  * country, region, population, and gdp_dol_per_capita
 * Change data types
@@ -110,7 +110,7 @@ I identified the following cleaning steps, which I implemented in [process_data.
 
 **staging/i94_cit_res_data.csv**
 
-* Cast country_id as an IntegerType()
+* Cast country_id as int
 * Make country unique, by appending `(<country_id>)` to string name
  * Only do when country equals INVALID: STATELESS or INVALID: UNITED STATES
 * Add foreign key column so can join to df_cow, name country_fk
@@ -119,12 +119,9 @@ I identified the following cleaning steps, which I implemented in [process_data.
 
 * Keep columns of interest and aggregate
  * i94mon, i94res, i94mode, i94bir, i94visa, visatype
-* Cast double typed columns as ints:
+* Cast double typed columns to ints:
  * i94mon, i94res, i94mode, i94bir, i94visa
 * Decode selected columns using mapping file (i94res)
-* Include country_fk column from mapping file
-* Define country_fk via left outer join
-* Replace numeric i94res column with its decoded counterpart
 * Decode selected columns using F.when (i94mode, i94visa)
 
 ### Step 3: Define the Data Model
