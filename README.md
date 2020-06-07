@@ -102,7 +102,7 @@ I identified the following cleaning steps, which I implemented in [process_data.
 
 * Clean column names: remove space, comma, parenthesis, etc.
 * Select subset of columns:
- * country, region, population, and gdp_dol_per_capita
+  * country, region, population, and gdp_dol_per_capita
 * Change data types
  * country and region are already strings, leave as is
  * population and gdp_dol_per_capita to ints
