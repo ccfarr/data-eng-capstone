@@ -58,7 +58,7 @@ I downloaded this CSV file from Kaggle.com ([source](https://www.kaggle.com/fern
 
 #### Explore the Data 
 
-I explored the three datasets in the staging directory on S3 using three EMR notebooks:
+I explored the three datasets that reside in a staging directory on S3 using EMR notebooks.
 
 **staging/countries_of_the_world.csv**
 
@@ -92,7 +92,7 @@ See [notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)
 * i94res has no missing values
 * i94bir has suspicious values, e.g. age < 0 and age >> 100
 
-Note: The python script [`ingest_data.py`](ingest_data.py) unions the 12 monthly files to produce this dataset. While performing the union, I noticed that the June file had extra columns, which I had to remove. See the python script for more details.
+Note: The python script [ingest_data.py](ingest_data.py) unions the 12 monthly files to produce this dataset. While performing the union, I noticed that the June file had extra columns, which I had to remove. See the python script for more details.
 
 #### Cleaning Steps
 I identified the following cleaning steps, which I implemented in [process_data.py](process_data.py):
@@ -126,23 +126,25 @@ I identified the following cleaning steps, which I implemented in [process_data.
 ### Step 3: Define the Data Model
 
 #### 3.1 Conceptual Data Model
-Map out the conceptual data model and explain why you chose that model
+I thought a simple, two table star schema was sufficient for this project. A fact table contains the events, which in this case is a person's visit. The data will be aggregated to the dimensions of interest (see data dictionary below). The second table in the schema is a dimension table for the countries sourced from the "Countries of the World" dataset. The `country` column in ths table can be joined using the `country_fk` column in the fact table.
 
 #### 3.2 Mapping Out Data Pipelines
 List the steps necessary to pipeline the data into the chosen data model
+As shown in [process_data.py](process_data.py), the main steps are as follows:
+
+1. Process `staging/countires_of_the_world.csv` (applying the transformations described above), yielding `production/dim_countires_of_the_world.parquet`.
+
+2. Prepare `staging/i94_cit_res_data.csv`, which will be used to both decode the numeric country identifier and add the `country_fk` column in the i94 data.
+
+3. Lastly, process `staging/i94_data.parquet`, yielding `production/fact_i94.parquet`.
 
 ### Step 4: Run Pipelines to Model the Data
 
 #### 4.1 Create the data model
-Build the data pipelines to create the data model.
+As shown in the overivew diagram, [ingest_data.py](ingest_data.py) converts the raw data into an intermediate state. Once here, the data is then transfromed and loaded by [process_data.py](process_data.py) into a production folder, ready for analysis.
 
 #### 4.2 Data Quality Checks
-Explain the data quality checks you'll perform to ensure the pipeline ran as expected. These could include:
- * Integrity constraints on the relational database (e.g., unique key, data type, etc.)
- * Unit tests for the scripts to ensure they are doing the right thing
- * Source/Count checks to ensure completeness
-
-I compared the number of visitors in 2016 from a report on the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to a dataframe I generated using the following command:
+In addition to checking if the record number counts were unchanged at various stages of the process, I compared the number of visitors in 2016 from a report on the government's official [website](https://travel.trade.gov/view/m-2017-I-001/index.asp) to a dataframe I generated using the following command:
 
 ```
 # I-94 Arrivals by Country of Residence (COR) and Month
@@ -156,7 +158,6 @@ df_analysis = df_fact.filter(~df_fact.i94res.contains('MEXICO')) \
 The comparison is shown below, where the result of the dataframe is on the left and the figures from the government report is shown at right. A perfect match for the top 20 countries!
 
 ![QC Comparison](./images/QC%20Comparison.png?raw=true)
-
 
 #### 4.3 Data dictionary 
 
@@ -187,12 +188,7 @@ All fields (expect for `country_fk`) sourced from i94 SAS files from Udacity.
 | i94res | The country of residence of the visitors | SOUTH KOREA | string |
 
 #### Step 5: Complete Project Write Up
-* Clearly state the rationale for the choice of tools and technologies for the project.
-* Propose how often the data should be updated and why.
-* Write a description of how you would approach the problem differently under the following scenarios:
- * The data was increased by 100x.
- * The data populates a dashboard that must be updated on a daily basis by 7am every day.
- * The database needed to be accessed by 100+ people.
+As mentioned above, "big data" tools were needed to process this data given its size. The production data could certainly be updated on a more frequent basis, per the release schedule by the relevant governmental authority. The tools used in this project could handle data at a larger scale, say 100x. The number of nodes configured in the EMR cluster would just need to increase as needed, of course. I also would need to sort out how to effectively extract the data into a staging environment, versus relying on my laptop. If data needs to be updated on a daily basis, a scheduling framework like Airflow could be used to schedule data processing "runs" and signal if any failures in the process. Lastly, if the end deliverable needs to support a dashboard viewed by 100 plus people, the production data could be loaded into a data warehousing technology like Amazon Redshift, which could then support a wide array of BI tools.
 
 ### Setup and Working with EMR cluster on AWS
 
