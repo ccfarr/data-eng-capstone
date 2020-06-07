@@ -1,5 +1,7 @@
 # data-eng-capstone
 Data Engineering Capstone Project
+Chris Farr, PhD
+June 2020
 
 ### Step 1: Scope the Project and Gather Data
 
