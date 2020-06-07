@@ -59,9 +59,11 @@ I downloaded this CSV file from Kaggle.com ([source](https://www.kaggle.com/fern
 #### Explore the Data 
 Identify data quality issues, like missing values, duplicate data, etc.
 
-I explored the three datasets in my staging on S3 using three EMR notebooks:
+I explored the three datasets in the staging directory on S3 using three EMR notebooks:
 
-**[1. notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)**
+**staging/i94_data.parquet**
+
+[notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)
 
 * 40,790,529 records
 * 28 columns
@@ -69,7 +71,11 @@ I explored the three datasets in my staging on S3 using three EMR notebooks:
 * i94res has no missing values
 * i94bir has suspicious values, e.g. age < 0 and age >> 100
 
-**[2. notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb)**
+Note: The python script [`ingest_data.py`](ingest_data.py) unions the 12 monthly files to produce this dataset. While performing the union, I noticed that the June file had extra columns, which I had to remove. See the python script for more details.
+
+**staging/i94_cit_res_data.csv**
+
+[notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb)
 
 * 289 records
 * 2 columns: country_id and country
@@ -89,6 +95,8 @@ I explored the three datasets in my staging on S3 using three EMR notebooks:
 
 #### Cleaning Steps
 Document steps necessary to clean the data
+
+**staging/i94_data.parquet**
 
 ### Step 3: Define the Data Model
 
