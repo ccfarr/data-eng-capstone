@@ -52,12 +52,25 @@ I also downloaded a small "mapping" file (i94_SAS_Labels_Descriptions.SAS) used 
 
 This data contains information about countries like population, GDP per capita and other country-level attributes.
 
-I downloaded this CSV file from Kaggle.com ([link](https://www.kaggle.com/fernandol/countries-of-the-world)).
+I downloaded this CSV file from Kaggle.com ([source](https://www.kaggle.com/fernandol/countries-of-the-world)).
 
 ### Step 2: Explore and Assess the Data
 
 #### Explore the Data 
 Identify data quality issues, like missing values, duplicate data, etc.
+
+I explored the three datasets in my staging on S3 using three EMR notebooks:
+
+**[notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)**
+
+Exploration summary:
+
+* 40,790,529 records
+* 28 columns
+* Numeric columns all typed as doubles
+* i94res has no missing values
+* i94bir has suspicious values, e.g. age < 0 and age >> 100
+
 
 #### Cleaning Steps
 Document steps necessary to clean the data
