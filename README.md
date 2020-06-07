@@ -57,13 +57,12 @@ I downloaded this CSV file from Kaggle.com ([source](https://www.kaggle.com/fern
 ### Step 2: Explore and Assess the Data
 
 #### Explore the Data 
-Identify data quality issues, like missing values, duplicate data, etc.
 
 I explored the three datasets in the staging directory on S3 using three EMR notebooks:
 
 **staging/countries_of_the_world.csv**
 
-See [notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries_of_the_world.ipynb).
+See [notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries_of_the_world.ipynb)
 
 * 227 records in total
 * 20 columns, all read in as strings
@@ -75,7 +74,7 @@ See [notebooks/explore_countries_of_the_world.ipynb](notebooks/explore_countries
 
 **staging/i94_cit_res_data.csv**
 
-See [notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb).
+See [notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_data.ipynb)
 
 * 289 records
 * 2 columns: country_id and country
@@ -85,7 +84,7 @@ See [notebooks/explore_i94_cit_res_data.ipynb](notebooks/explore_i94_cit_res_dat
 
 **staging/i94_data.parquet**
 
-See [notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb).
+See [notebooks/explore_i94_data.ipynb](notebooks/explore_i94_data.ipynb)
 
 * 40,790,529 records
 * 28 columns
