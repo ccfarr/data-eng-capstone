@@ -128,7 +128,7 @@ I identified the following cleaning steps, which I implemented in [process_data.
 ### Step 3: Define the Data Model
 
 #### 3.1 Conceptual Data Model
-I thought a simple, two table star schema was sufficient for this project. A fact table contains the events, which in this case is a person's visit. The data will be aggregated to the dimensions of interest (see data dictionary below). The second table in the schema is a dimension table for the countries sourced from the "Countries of the World" dataset. The `country` column in ths table can be joined using the `country_fk` column in the fact table.
+I thought a simple, two table star schema was sufficient for this project. A fact table contains the events, which in this case is a person's visit. The data will be aggregated to the dimensions of interest (see data dictionary below). The second table in the schema is a dimension table for the countries sourced from the "Countries of the World" dataset. The `country` column in this table can be joined using the `country_fk` column in the fact table.
 
 #### 3.2 Mapping Out Data Pipelines
 List the steps necessary to pipeline the data into the chosen data model
