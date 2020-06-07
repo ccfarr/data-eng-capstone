@@ -4,9 +4,13 @@ Data Engineering Capstone Project
 ### Step 1: Scope the Project and Gather Data
 
 #### Scope 
-Explain what you plan to do in the project in more detail. What data do you use? What is your end solution look like? What tools did you use? etc.
+The following diagram provides an overview of the scope of my project.
 
 ![Overview](./images/Overview.png?raw=true)
+
+In summary, I will take raw data captured from i94 forms in the year of 2016 (12 monthly files) and integrate it with country-level attributes, like population and GDP per capita, obtained from a "Countries of the World" csv file obtained from the website Kaggle ([source](https://www.kaggle.com/fernandol/countries-of-the-world)).
+
+The monthly, i94 files are large, ranging in size from 391 MB to 716 MB, for a total of 6.51 GB on disk for all 12 files. (All 12 files combined contain 40,790,529 records.) Given the size of this data, I'll be using PySpark and EMR instances to process. The final deliverable will be two parquet files (a fact table and a dimension table) hosted on Amazon's S3 storage platform. I will author a EMR notebook to illustrate how these tables can be joined together and queried using the PySpark DataFrame API.
 
 #### Describe and Gather Data 
 I used two primary datasets:
