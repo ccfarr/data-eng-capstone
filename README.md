@@ -195,7 +195,7 @@ As mentioned above, "big data" tools were needed to process this data given its 
 
 * **EMR Cluster** - I ran my PySpark script [process_data.py](process_data.py) on a cluster of computers (1 Master and 2 Core nodes) provided by Amazon's EMR Cluster service. I simply had to SSH into the cluster and issue `spark-submit process_data.py` to kick off the spark job. Details on setup and how to run spark jobs given below.
 
-* **S3** - I created staging and production folders on Amazon's S3 storage service. The EMR cluster I used to process my PySpark scripts accessed the data directly from S3 (versus me loading the data myself into the cluster).
+* **S3** - I created staging and production folders on Amazon's S3 storage service. The EMR cluster I used to process my PySpark script and EMR notebooks accessed the data directly from S3 (versus me loading the data myself into the cluster).
 
 * **EMR Notebooks** - I used Jupyter notebooks to both explore the data and analyze the data once put into a star-schema. Specifically, I used Amazon's EMR notebooks, which you attach to a running cluster. I found that opening the notebook in a JupyterLab environment allowed me to upload and download workbooks easily.
 
